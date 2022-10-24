@@ -1,0 +1,55 @@
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  postgres:
+    image: postgres:14.5-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - type: volume
+        source: postgres_data
+        target: /var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "PGPASSWORD=postgres pg_isready -U postgres -h postgres" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
+  flyway:
+    image: flyway/flyway:9.5.1-alpine
+    environment:
+      POSTGRES_DB: highscores
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/highscores
+      FLYWAY_USER: highscores
+      FLYWAY_PASSWORD: highscores
+    command:
+      -locations=filesystem:/flyway/sql -connectRetries=60 migrate
+    volumes:
+      - ./../src/main/resources/db/migration/:/flyway/sql
+      - ./configs/flyway.config:/flyway/conf/flyway.config
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    environment:
+      DB_PASSWORD: postgres
+      DB_URL: jdbc:postgresql://localhost:5432/highscores
+      DB_USER: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
+    ports:
+      - "8080:8080"
+    container_name: backend
+    restart: unless-stopped

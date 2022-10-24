@@ -1,11 +1,9 @@
-package com.example.fivelettersscorebord.core.entites;
+package com.example.colorscoreboard.core.entites;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,8 +26,7 @@ public class Highscore {
     @Column(name = "id", nullable = false)
     private UUID id;
 
-    @Immutable
-    @Column(name = "nickname", nullable = false, unique = true)
+    @Column(name = "nickname", nullable = false, unique = true, updatable = false)
     private String nickname;
 
     @Column(name = "score", nullable = false)

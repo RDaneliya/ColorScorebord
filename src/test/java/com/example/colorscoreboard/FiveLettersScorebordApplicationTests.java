@@ -1,4 +1,4 @@
-package com.example.fivelettersscorebord;
+package com.example.colorscoreboard;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

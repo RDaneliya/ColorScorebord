@@ -1,4 +1,4 @@
-package com.example.fivelettersscorebord;
+package com.example.colorscoreboard;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
